@@ -44,7 +44,7 @@ void my_socket::Socket::Bind(const char* ip, int port) {
 
     _addr.sin_addr.S_un.S_addr = inet_addr(ip);
     _addr.sin_port = htons(port);
-    _addr.sin_family = AF_INET;
+    _addr.sin_family = _af;
     _size_of_addr = sizeof(_addr);
   
     bind(_socket_id, (sockaddr*)&_addr, _size_of_addr);
@@ -84,7 +84,7 @@ void my_socket::Socket::SendChar(char c, int flags)
 
 void my_socket::Socket::SendString(std::string msg, int flags)
 {
-    send(_socket_id, msg.c_str(), msg.length, flags);
+    send(_socket_id, msg.c_str(), msg.length(), flags);
 }
 
 char* my_socket::Socket::RecieveChars(size_t buff_size, int flags)
