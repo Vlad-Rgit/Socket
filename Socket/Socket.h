@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 
 #ifdef __linux__
 	#include <sys/socket.h>
