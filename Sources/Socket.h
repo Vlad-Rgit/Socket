@@ -42,7 +42,7 @@ namespace my_socket {
 
      	public:
 			Socket(int type);
-			Socket(int type, int protocol = 0);
+			Socket(int type, int protocol);
 
 			void Bind(const char* ip, int port);
 			int Connect(const char* ip, int port);
@@ -51,7 +51,13 @@ namespace my_socket {
 			void SendChar(char c, int flags = 0);
 			void SendString(std::string msg, int flags = 0);
 			char* RecieveChars(size_t buff_size, int flags = 0);
-			std::byte RecieveByte(int flags = 0);
+
+			#ifdef  _HAS_STD_BYTE
+				std::byte RecieveByte(int flags = 0);
+			#endif   
+
+
+		
 			std::string RecieveString(int length, int flags = 0);
 			char RecieveChar(int flags = 0);
 			Socket WaitForClient();
