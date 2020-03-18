@@ -3,61 +3,77 @@
 #include <iostream>
 #include <exception>
 
+#ifdef _WIN32
 
+    WSAData my_socket::Socket::InitWsa(int major, int minor)
+    {
+        WORD ver = MAKEWORD(major, minor);
+        WSAData data;
 
-WSAData my_socket::Socket::InitWsa(int major, int minor)
-{
-    WORD ver = MAKEWORD(major, minor);
-    WSAData data;
+        WSAStartup(ver, &data);
+        return data;
+    }
 
-    WSAStartup(ver, &data);
-    return data;
-}
+    WSAData my_socket::Socket::InitWsa()
+    {
+        WORD ver = MAKEWORD(2, 1);
+        WSAData data;
 
-WSAData my_socket::Socket::InitWsa()
-{
-    WORD ver = MAKEWORD(2, 1);
-    WSAData data;
+        WSAStartup(ver, &data);
+        return data;
+    }
 
-    WSAStartup(ver, &data);
-    return data;
-}
-
+#endif
 
 my_socket::Socket::Socket(int type)
-    : _af(AF_INET), _type(type)
+    : _type(type)
 {
-    _socket_id = socket(_af, _type, NULL);
+    _socket_id = socket(AF_INET, _type, NULL);
 }
 
-my_socket::Socket::Socket(int af, int type, int protocol)
-    : _af(af), _type(type)
+my_socket::Socket::Socket(int type, int protocol)
+    : _type(type)
 {
-    _socket_id = socket(_af, _type, protocol);
+    _socket_id = socket(AF_INET, _type, protocol);
 }
 
-my_socket::Socket::Socket(int socket_id, sockaddr_in addr)
-    :_socket_id(socket_id), _client_addr(addr) { }
+my_socket::Socket::Socket(unsigned int socket_id)
+    :_socket_id(socket_id) { }
 
 
 void my_socket::Socket::Bind(const char* ip, int port) {
 
-    _addr.sin_addr.S_un.S_addr = inet_addr(ip);
+    _addr.sin_family = AF_INET;
+
+    #ifdef __linux__
+        _addr.sin_addr.s_addr = inet_addr(ip);
+    #endif
+
+    #ifdef _WIN32
+        _addr.sin_addr.S_un.S_addr = inet_addr(ip);
+    #endif
+
     _addr.sin_port = htons(port);
-    _addr.sin_family = _af;
-    _size_of_addr = sizeof(_addr);
-  
-    bind(_socket_id, (sockaddr*)&_addr, _size_of_addr);
+
+    bind(_socket_id, (sockaddr*)&_addr, sizeof(_addr));
     _isBinded = true;
 }
 
 int my_socket::Socket::Connect(const char* ip, int port)
 {
     sockaddr_in addr;
-    addr.sin_addr.S_un.S_addr = inet_addr(ip);
-    addr.sin_port = htons(port);
-    addr.sin_family = _af;
+    addr.sin_family = AF_INET;
 
+    #ifdef __linux__
+        addr.sin_addr.s_addr = inet_addr(ip);
+    #endif
+
+    #ifdef _WIN32
+        addr.sin_addr.S_un.S_addr = inet_addr(ip);
+    #endif
+
+    addr.sin_port = htons(port);
+  
     return connect(_socket_id, (sockaddr*)&addr, sizeof(addr));
 }
 
@@ -66,11 +82,21 @@ void my_socket::Socket::StartListen(int maxClients) {
 
     if (_isBinded == false)
     {
-        throw new std::exception("Socket is not binded");
+        throw new std::exception();
     }
 
     listen(_socket_id, maxClients);
 }
+
+my_socket::Socket my_socket::Socket::WaitForClient() {
+
+    sockaddr_in newAddr;
+    int size_of_newAddr = sizeof(newAddr);
+    unsigned int new_socket_id = accept(_socket_id, (sockaddr*)&newAddr, &size_of_newAddr);
+    Socket socket(new_socket_id);
+    return socket;
+}
+
 
 void my_socket::Socket::SendChars(const char* buf, int length,int flags)
 {
@@ -119,12 +145,3 @@ std::string my_socket::Socket::RecieveString(int length, int flags)
 
 
 
-my_socket::Socket my_socket::Socket::WaitForClient() {
-
-    sockaddr_in newAddr;
-    int size_of_newAddr = sizeof(newAddr);
-
-    unsigned int new_socket_id = accept(_socket_id, (sockaddr*)&newAddr, &size_of_newAddr);
-    Socket socket(new_socket_id, newAddr);
-    return socket;
-}

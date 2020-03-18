@@ -3,3 +3,11 @@
 ################################################################################
 
 /.vs
+/Debug
+/Binaries/libsocket.a
+/Binaries/my_socket.lib
+/ServerExample.txt
+/my_socket.vcxproj.user
+/my_socket.vcxproj.filters
+/my_socket.vcxproj
+/my_socket.sln
