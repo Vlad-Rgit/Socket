@@ -2,9 +2,4 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/my_socket.vcxproj.user
-/my_socket.vcxproj.filters
-/my_socket.vcxproj
-/Debug
-/.vs/my_socket/v16
-/my_socket.sln
+/.vs
