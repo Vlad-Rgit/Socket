@@ -7,6 +7,7 @@
 int main(int argc, char* argv[])
 
 {	
+
 	my_socket::Socket listener(SOCK_STREAM);
 	
 	listener.Bind("192.168.100.229", 20011);
