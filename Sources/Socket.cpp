@@ -113,29 +113,41 @@ void my_socket::Socket::SendString(std::string msg, int flags)
     send(_socket_id, msg.c_str(), msg.length(), flags);
 }
 
-char* my_socket::Socket::RecieveChars(size_t buff_size, int flags)
+void my_socket::Socket::SendInt(int i, int flags)
+{
+    send(_socket_id, (char*)&i, sizeof(int), flags);
+}
+
+char* my_socket::Socket::ReceiveChars(size_t buff_size, int flags)
 {
     char* msg = new char[buff_size];
     recv(_socket_id, msg, buff_size, NULL);
     return msg;
 }
 
-char my_socket::Socket::RecieveChar(int flags)
+char my_socket::Socket::ReceiveChar(int flags)
 {
     char c;
     recv(_socket_id, &c, 1, flags);
     return c;
 }
 
+int my_socket::Socket::ReceiveInt(int flags)
+{
+    int i;
+    recv(_socket_id, (char*)&i, sizeof(int), flags);
+    return i;
+}
 
-std::byte my_socket::Socket::RecieveByte(int flags)
+
+std::byte my_socket::Socket::ReceiveByte(int flags)
 {
     char c;
     recv(_socket_id, &c, 1, flags);
     return (std::byte)c;
 }
 
-std::string my_socket::Socket::RecieveString(int length, int flags)
+std::string my_socket::Socket::ReceiveString(int length, int flags)
 {
     char* buffer = new char[length];
     recv(_socket_id, buffer, length, flags);

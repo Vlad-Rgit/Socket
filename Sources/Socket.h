@@ -47,20 +47,20 @@ namespace my_socket {
 			void Bind(const char* ip, int port);
 			int Connect(const char* ip, int port);
 			void StartListen(int maxClients = SOMAXCONN);
+			Socket WaitForClient();
 			void SendChars(const char* buf, int length, int flags = 0);
 			void SendChar(char c, int flags = 0);
 			void SendString(std::string msg, int flags = 0);
-			char* RecieveChars(size_t buff_size, int flags = 0);
+			void SendInt(int i, int flags = 0);
+			char* ReceiveChars(size_t buff_size, int flags = 0);
 
 			#ifdef  _HAS_STD_BYTE
-				std::byte RecieveByte(int flags = 0);
+				std::byte ReceiveByte(int flags = 0);
 			#endif   
-
-
 		
-			std::string RecieveString(int length, int flags = 0);
-			char RecieveChar(int flags = 0);
-			Socket WaitForClient();
+			std::string ReceiveString(int length, int flags = 0);
+			char ReceiveChar(int flags = 0);
+			int ReceiveInt(int flags = 0);
 
 			inline bool IsBinded() const { return _isBinded; }
 
