@@ -149,7 +149,8 @@ std::byte my_socket::Socket::ReceiveByte(int flags)
 
 std::string my_socket::Socket::ReceiveString(int length, int flags)
 {
-    char* buffer = new char[length];
+    char* buffer = new char[length+1];
+    buffer[length] = '\0';
     recv(_socket_id, buffer, length, flags);
     std::string str(buffer);
     return str;
